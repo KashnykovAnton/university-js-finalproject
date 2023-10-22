@@ -19,26 +19,32 @@ function onGalleryClick(e) {
   if (e.currentTarget === e.target) {
     return;
   }
-  window.addEventListener("keydown", onEscKeyPress);
-  createModal(e.target.dataset.source, e.target.alt);
+  instance = basicLightbox.create(
+    createHtml(e.target.dataset.source, e.target.alt),
+    options
+  );
   instance.show();
 }
 
-function createModal(original, description) {
-  instance = basicLightbox.create(`
-  <div class="modal">
-    <img src="${original}" alt="${description}" />
-  </div>
-`);
+function createHtml(original, description) {
+  return ` 
+  <div class="modal"> 
+    <img src="${original}" alt="${description}" /> 
+  </div> 
+`;
 }
+
+const options = {
+  onShow: (instance) => {
+    window.addEventListener("keydown", onEscKeyPress);
+  },
+  onClose: (instance) => {
+    window.removeEventListener("keydown", onEscKeyPress);
+  },
+};
 
 function onEscKeyPress(e) {
   if (e.code === "Escape") {
-    onModalClose();
+    instance.close();
   }
-}
-
-function onModalClose() {
-  window.removeEventListener("keydown", onEscKeyPress);
-  instance.close();
 }
